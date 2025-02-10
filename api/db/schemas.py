@@ -62,6 +62,10 @@ class InMemoryDB:
             Book: Book.
         """
         return self.books.get(book_id)
+    
+    def get_book_by_id(self, book_id: int) -> Book | None:
+        return self.books.get(book_id)
+
 
     def update_book(self, book_id: int, data: Book) -> Book:
         """Updates a specific book in database.
