@@ -3,7 +3,7 @@ name: CD Pipeline
 on:
   push:
     branches:
-      - amazingfeature  # Trigger on pushes to the amazingfeature branch
+      - main  # Trigger on pushes to the main branch
 
 jobs:
   deploy:
@@ -22,7 +22,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@44.222.207.216 "
             cd /home/ubuntu/fastapi-book-project &&
-            git pull origin amazingfeature &&
+            git pull origin main &&
             sudo docker build -t fastapi-app -f api/Dockerfile . --no-cache  &&
             sudo docker stop fastapi-container || true &&
             sudo docker rm fastapi-container || true &&
