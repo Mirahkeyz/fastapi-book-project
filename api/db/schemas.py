@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import OrderedDict
+from typing import OrderedDict, Optional
 
 from pydantic import BaseModel
 
@@ -63,7 +63,15 @@ class InMemoryDB:
         """
         return self.books.get(book_id)
     
-    def get_book_by_id(self, book_id: int) -> Book | None:
+    def get_book_by_id(self, book_id: int) -> Optional[Book]:  # Fix the type hint
+        """Gets a specific book from database.
+
+        Args:
+            book_id (int): Book ID.
+
+        Returns:
+            Optional[Book]: Book or None if not found.
+        """
         return self.books.get(book_id)
 
 
