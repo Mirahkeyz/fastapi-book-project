@@ -17,7 +17,7 @@ COPY . .
 RUN apt-get update && apt-get install -y nginx
 
 # Copy Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY api/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose the port
 EXPOSE 80
