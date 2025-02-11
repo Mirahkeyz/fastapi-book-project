@@ -1,0 +1,30 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - amazingfeature  # Trigger on pushes to the amazingfeature branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@44.222.207.216 "
+            cd /home/ubuntu/fastapi-book-project &&
+            git pull origin amazingfeature &&
+            sudo docker build -t fastapi-app -f api/Dockerfile . --no-cache  &&
+            sudo docker stop fastapi-container || true &&
+            sudo docker rm fastapi-container || true &&
+            sudo docker run -d -p 8000:8000 --name fastapi-container fastapi-app
+          "
