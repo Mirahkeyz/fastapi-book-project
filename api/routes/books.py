@@ -7,7 +7,7 @@ from fastapi import APIRouter, status, HTTPException  # Add HTTPException to imp
 
 from api.db.schemas import Book, Genre, InMemoryDB
 
-router = APIRouter()
+router = APIRouter)
 
 db = InMemoryDB()
 db.books = {
