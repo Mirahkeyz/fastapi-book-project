@@ -1,0 +1,30 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@3.87.64.165 "
+            cd /home/ubuntu/fastapi-book-project &&
+            git pull origin main &&
+            sudo docker build -t fastapi-app -f api/Dockerfile . --no-cache  &&
+            sudo docker stop fastapi-container || true &&
+            sudo docker rm fastapi-container || true &&
+            sudo docker run -d -p 8000:8000 --name fastapi-container fastapi-app
+          "
