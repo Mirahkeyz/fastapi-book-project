@@ -144,3 +144,97 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 For support, please open an issue in the GitHub repository.
+
+The CI/CD pipeline automates testing, building, and deploying the FastAPI application using GitHub Actions
+
+# Write Out Dockerfile and Nginx.conf
+
+Note: Ensure Docker is installed on your EC2 using this command
+
+```
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+# Build The Docker Image
+
+```
+sudo docker build -t fastapi-app .
+```
+# Run the Docker Image
+
+```
+sudo docker run -d -p 8000:8000 --name fastapi-container fastapi-app
+```
+
+Ensure Nginx is installed on your EC2 
+
+```
+sudo apt install nginx -y
+```
+
+# Configure Nginx
+
+```
+sudo nano /etc/nginx/sites-available/fastapi-app
+```
+
+Add the following Configuration
+
+```
+server {
+    listen 80;
+    server_name <new-public-ip>;
+
+    location / {
+        proxy_pass http://localhost:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+# Enable The Configuration
+
+```
+sudo ln -s /etc/nginx/sites-available/fastapi-app /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+# Test the Application
+
+- Test the FastAPI directly
+  ```
+  curl http://localhost:8000/api/v1/books/1
+  ```
+
+  - Test Nginx
+    ```
+    curl http://localhost
+    ```
+
+    - Test Public Ip
+      ```
+      http://<new-public-ip>/api/v1/books/1
+      ```
+
+  # Automate Deployment With Github Actions
+
+  ```
+  mkdir -p .github/workflows
+  ```
+  # Create KNOWN_Secrets
+
+   ```
+   ssh-keyscan <new-public-ip> > known_hosts
+   ```
+
+   Update the Known_hosts secret in your Github Repository
+
+  
+  
